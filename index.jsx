@@ -6,7 +6,15 @@ export function CurrencyConverter() {
     EUR: 0.84,
     GBP: 0.73,
     JPY: 154.35,
+    CHF: 0.88,
+    CAD: 1.36,
+    AUD: 1.53,
+    CNY: 7.19,
+    SEK: 10.45,
+    NZD: 1.67,
   };
+
+  const currencies = Object.keys(rates);
 
   const [amountToConvert, setAmountToConvert] = useState(1);
   const [convertedFrom, setConvertedFrom] = useState("USD");
@@ -34,20 +42,22 @@ export function CurrencyConverter() {
         value={convertedFrom}
         onChange={(e) => setConvertedFrom(e.target.value)}
       >
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="GBP">GBP</option>
-        <option value="JPY">JPY</option>
+        {currencies.map((cur) => (
+          <option key={cur} value={cur}>
+            {cur}
+          </option>
+        ))}
       </select>
 
       <select
         value={convertedTo}
         onChange={(e) => setConvertedTo(e.target.value)}
       >
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-        <option value="GBP">GBP</option>
-        <option value="JPY">JPY</option>
+        {currencies.map((cur) => (
+          <option key={cur} value={cur}>
+            {cur}
+          </option>
+        ))}
       </select>
 
       <p>
