@@ -1,4 +1,4 @@
-const { useState } = React;
+const { useState, useMemo } = React;
 
 export function CurrencyConverter() {
   const rates = {
@@ -8,43 +8,31 @@ export function CurrencyConverter() {
     JPY: 154.35,
   };
 
-  const recalculateAll = (amt, from) => {
-    const baseUSD = amt / rates[from];
-    return {
-      USD: baseUSD * rates.USD,
-      EUR: baseUSD * rates.EUR,
-      GBP: baseUSD * rates.GBP,
-      JPY: baseUSD * rates.JPY,
-    };
-  };
-
   const [amountToConvert, setAmountToConvert] = useState(1);
   const [convertedFrom, setConvertedFrom] = useState("USD");
   const [convertedTo, setConvertedTo] = useState("EUR");
-  const [convertedMap, setConvertedMap] = useState(() =>
-    recalculateAll(1, "USD")
-  );
+  const [baseUSD, setBaseUSD] = useState(1);
+
+  useMemo(() => {
+    const usd = amountToConvert / rates[convertedFrom];
+    setBaseUSD(usd);
+  }, [amountToConvert, convertedFrom]);
+
+  const displayedAmount = (baseUSD * rates[convertedTo]).toFixed(2);
 
   return (
     <>
       <input
         type="number"
         value={amountToConvert}
-        onChange={(e) => {
-          const val = Number(e.target.value);
-          setAmountToConvert(val);
-          setConvertedMap(recalculateAll(val, convertedFrom));
-        }}
+        onChange={(e) =>
+          setAmountToConvert(Number(e.target.value))
+        }
       />
 
-      
       <select
         value={convertedFrom}
-        onChange={(e) => {
-          const newFrom = e.target.value;
-          setConvertedFrom(newFrom);
-          setConvertedMap(recalculateAll(amountToConvert, newFrom));
-        }}
+        onChange={(e) => setConvertedFrom(e.target.value)}
       >
         <option value="USD">USD</option>
         <option value="EUR">EUR</option>
@@ -52,7 +40,6 @@ export function CurrencyConverter() {
         <option value="JPY">JPY</option>
       </select>
 
-      
       <select
         value={convertedTo}
         onChange={(e) => setConvertedTo(e.target.value)}
@@ -64,7 +51,7 @@ export function CurrencyConverter() {
       </select>
 
       <p>
-        {convertedMap[convertedTo].toFixed(2)} {convertedTo}
+        {displayedAmount} {convertedTo}
       </p>
     </>
   );
